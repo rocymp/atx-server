@@ -15,10 +15,10 @@ import (
 	"github.com/alecthomas/kingpin"
 	"github.com/codeskyblue/dingrobot"
 	"github.com/gorilla/websocket"
+	"github.com/qiniu/log"
 	"github.com/rocymp/atx-server/model"
 	"github.com/rocymp/atx-server/proto"
 	"github.com/rocymp/atx-server/tclient"
-	"github.com/qiniu/log"
 )
 
 const (
@@ -188,7 +188,7 @@ func main() {
 
 	log.Info("initial database")
 	db = model.InitDB(*rdbAddr, *rdbName)
-	tc = tclient.NewTClient("127.0.0.1:8888", db)
+	tc = tclient.NewTClient("device.truebaas.com:18989", db)
 	log.Info("listen address", *addr)
 	log.Fatal(http.ListenAndServe(*addr, newHandler()))
 }
