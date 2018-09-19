@@ -21,8 +21,9 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"github.com/koding/websocketproxy"
-	hb2 "github.com/openatx/atx-server/heartbeat"
-	"github.com/openatx/atx-server/proto"
+	hb2 "github.com/rocymp/atx-server/heartbeat"
+	"github.com/rocymp/atx-server/proto"
+	"github.com/rocymp/atx-server/util"
 	"github.com/qiniu/log"
 )
 
@@ -342,12 +343,12 @@ func newHandler() http.Handler {
 			return
 		}
 		defer ws.Close()
-		if toBool(info.Using) {
+		if util.ToBool(info.Using) {
 			log.Printf("Device %s is using", udid)
 			return
 		}
 		db.DeviceUpdate(info.Udid, proto.DeviceInfo{
-			Using:        newBool(true),
+			Using:        util.NewBool(true),
 			UsingBeganAt: time.Now(),
 			Owner: &proto.OwnerInfo{
 				IP: realip.FromRequest(r),
@@ -355,7 +356,7 @@ func newHandler() http.Handler {
 		})
 		defer func() {
 			db.DeviceUpdate(udid, proto.DeviceInfo{
-				Using: newBool(false),
+				Using: util.NewBool(false),
 			})
 			go func() {
 				port := info.Port
@@ -396,16 +397,16 @@ func newHandler() http.Handler {
 				http.Error(w, "Device get error "+err.Error(), http.StatusGone)
 				return
 			}
-			if !toBool(info.Present) {
+			if !util.ToBool(info.Present) {
 				http.Error(w, "Device offline", http.StatusGone)
 				return
 			}
-			if toBool(info.Using) {
+			if util.ToBool(info.Using) {
 				http.Error(w, "Device is using", http.StatusForbidden)
 				return
 			}
 			db.DeviceUpdate(info.Udid, proto.DeviceInfo{
-				Using:        newBool(true),
+				Using:        util.NewBool(true),
 				UsingBeganAt: time.Now(),
 				Owner: &proto.OwnerInfo{
 					IP: realip.FromRequest(r),
@@ -416,7 +417,7 @@ func newHandler() http.Handler {
 		}
 		// DELETE
 		db.DeviceUpdate(udid, proto.DeviceInfo{
-			Using: newBool(false),
+			Using: util.NewBool(false),
 		})
 		io.WriteString(w, "Release success")
 	}).Methods("POST", "DELETE")
@@ -454,6 +455,8 @@ func newHandler() http.Handler {
 			Udid: identifier,
 			IP:   host,
 		})
+
+		tc.ReportDevices()
 		log.Println(identifier, "is online")
 	}
 
@@ -464,11 +467,13 @@ func newHandler() http.Handler {
 			Udid: identifier,
 			IP:   host,
 		})
+		tc.ReportDevices()
 		log.Println(identifier, "is reconnected")
 	}
 
 	hbs.OnDisconnect = func(identifier string) {
 		db.SetDeviceAbsent(identifier)
+		tc.ReportDevices()
 		log.Println(identifier, "is offline")
 	}
 	r.Handle("/heartbeat", hbs)

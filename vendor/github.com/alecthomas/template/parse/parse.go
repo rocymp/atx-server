@@ -644,7 +644,7 @@ func (t *Tree) term() Node {
 	case itemField:
 		return t.newField(token.pos, token.val)
 	case itemBool:
-		return t.newBool(token.pos, token.val == "true")
+		return t.NewBool(token.pos, token.val == "true")
 	case itemCharConstant, itemComplex, itemNumber:
 		number, err := t.newNumber(token.pos, token.val, token.typ)
 		if err != nil {

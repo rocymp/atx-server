@@ -493,7 +493,7 @@ type BoolNode struct {
 	True bool // The value of the boolean constant.
 }
 
-func (t *Tree) newBool(pos Pos, true bool) *BoolNode {
+func (t *Tree) NewBool(pos Pos, true bool) *BoolNode {
 	return &BoolNode{tr: t, NodeType: NodeBool, Pos: pos, True: true}
 }
 
@@ -509,7 +509,7 @@ func (b *BoolNode) tree() *Tree {
 }
 
 func (b *BoolNode) Copy() Node {
-	return b.tr.newBool(b.Pos, b.True)
+	return b.tr.NewBool(b.Pos, b.True)
 }
 
 // NumberNode holds a number: signed or unsigned integer, float, or complex.

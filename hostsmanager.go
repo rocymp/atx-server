@@ -4,12 +4,13 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/openatx/atx-server/proto"
+	"github.com/rocymp/atx-server/proto"
+	"github.com/rocymp/atx-server/util"
 )
 
 func deviceQueryToUdid(query string) (udid string, err error) {
 	if strings.HasPrefix(query, "ip:") {
-		infos := db.DeviceFindAll(proto.DeviceInfo{IP: query[3:], Present: newBool(true)})
+		infos := db.DeviceFindAll(proto.DeviceInfo{IP: query[3:], Present: util.NewBool(true)})
 		return extractUdidFromInfos(infos)
 	}
 	return query, nil

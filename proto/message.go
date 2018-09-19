@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/openatx/androidutils"
+	"github.com/rocymp/androidutils"
 )
 
 type MessageType int
@@ -13,6 +13,7 @@ type MessageType int
 const (
 	DeviceInfoMessage = MessageType(0)
 	PingMessage       = MessageType(1)
+	UpReportMessage   = MessageType(100)
 )
 
 type CommonMessage struct {

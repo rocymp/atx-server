@@ -15,7 +15,9 @@ import (
 	"github.com/alecthomas/kingpin"
 	"github.com/codeskyblue/dingrobot"
 	"github.com/gorilla/websocket"
-	"github.com/openatx/atx-server/proto"
+	"github.com/rocymp/atx-server/model"
+	"github.com/rocymp/atx-server/proto"
+	"github.com/rocymp/atx-server/tclient"
 	"github.com/qiniu/log"
 )
 
@@ -32,6 +34,9 @@ var (
 	videoBackend    = kingpin.Flag("video-backend", "backend service for encoding images to video").Default("http://localhost:7000").String()
 	atxAgentVersion string
 	dingtalkToken   string
+
+	db *model.RdbUtils
+	tc *tclient.TClient
 )
 
 func handleWebsocketMessage(host string, message []byte) {
@@ -157,7 +162,7 @@ func batchRunCommand(command string) {
 }
 
 func main() {
-	// Refs: atx-agent version https://github.com/openatx/atx-agent/releases
+	// Refs: atx-agent version https://github.com/rocymp/atx-agent/releases
 	kingpin.Flag("agent", "atx-agent version").Default(defaultATXAgentVersion).StringVar(&atxAgentVersion)
 	// FIXME(ssx): Ding talk is disabled because of too many boring messages
 	kingpin.Flag("ding-token", "DingDing robot token (env: DING_TOKEN)").OverrideDefaultFromEnvar("DING_TOKEN").StringVar(&dingtalkToken)
@@ -182,7 +187,8 @@ func main() {
 	}
 
 	log.Info("initial database")
-	initDB(*rdbAddr, *rdbName)
+	db = model.InitDB(*rdbAddr, *rdbName)
+	tc = tclient.NewTClient("127.0.0.1:8888", db)
 	log.Info("listen address", *addr)
 	log.Fatal(http.ListenAndServe(*addr, newHandler()))
 }

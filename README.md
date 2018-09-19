@@ -16,8 +16,8 @@ Manage batch of atx-agents
 Compile with go
 
 ```bash
-$ go get -v github.com/openatx/atx-server
-$ cd $GOPATH/src/github.com/openatx/atx-server
+$ go get -v github.com/rocymp/atx-server
+$ cd $GOPATH/src/github.com/rocymp/atx-server
 $ go build
 ```
 
@@ -37,7 +37,7 @@ launch `atx-server`
 ./atx-server --port 8000
 ```
 
-Install `atx-agent` using [uiautomator2](https://github.com/openatx/uiautomator2) into android phone. your android phone and server running `atx-server` should in the same intranet.
+Install `atx-agent` using [uiautomator2](https://github.com/rocymp/uiautomator2) into android phone. your android phone and server running `atx-server` should in the same intranet.
 
 Suppose server running `atx-server` got the ip `10.0.1.1`, listen port `8000`. Do the following command
 
@@ -98,7 +98,7 @@ There are some fields you need pay attention.
 - `ready` is the thumb :thumbsup: you can see and edit in the web
 - `using` means if device is using by someone
 
-`provider` is a special field, if device is plugged into some machine which running [u2init](https://github.com/openatx/u2init), the bellow info can be found in device info.
+`provider` is a special field, if device is plugged into some machine which running [u2init](https://github.com/rocymp/u2init), the bellow info can be found in device info.
 
 ```json
 "provider": {

@@ -4,7 +4,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/openatx/atx-server/proto"
+	"github.com/rocymp/atx-server/proto"
 
 	r "gopkg.in/gorethink/gorethink.v3"
 )
