@@ -9,12 +9,22 @@ import (
 )
 
 type MessageType int
+type CommandType string
 
 const (
 	DeviceInfoMessage = MessageType(0)
 	PingMessage       = MessageType(1)
 	UpReportMessage   = MessageType(100)
+	StartRoomMessage  = MessageType(200)
+	StopRoomMessage   = MessageType(300)
+	StartRoom		= CommandType("start")
+	StopRoom		= CommandType("stop")
 )
+
+type RoomMessage struct {
+	Rid int64				`json:"rid"`
+	Command CommandType		`json:"command"`
+}
 
 type CommonMessage struct {
 	Type MessageType
