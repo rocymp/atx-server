@@ -7,6 +7,8 @@ import (
 	"github.com/rocymp/atx-server/model"
 	"github.com/rocymp/atx-server/proto"
 	"github.com/rocymp/zero"
+	"os/exec"
+	"fmt"
 )
 
 type TClient struct {
@@ -26,6 +28,14 @@ func NewTClient(addr string, db *model.RdbUtils) *TClient {
 	return &TClient{
 		client: c,
 		db:     db,
+	}
+}
+
+func (tc *TClient) HandleMessage(msg *zero.Message) {
+	rm := new(proto.RoomMessage)
+	if msg.GetCMD() == int32(proto.StartRoomMessage) || msg.GetCMD() == int32(proto.StopRoomMessage) {
+		json.Unmarshal(msg.GetData(),rm)
+		exec.Command("python",fmt.Sprintf("d:\room.py -c %s -r %d",rm.Command,rm.Rid))
 	}
 }
 
