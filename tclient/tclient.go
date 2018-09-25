@@ -3,12 +3,15 @@ package tclient
 import (
 	"encoding/json"
 	"log"
+	"time"
+
+	"fmt"
+	"os/exec"
 
 	"github.com/rocymp/atx-server/model"
 	"github.com/rocymp/atx-server/proto"
+	"github.com/rocymp/atx-server/util"
 	"github.com/rocymp/zero"
-	"os/exec"
-	"fmt"
 )
 
 type TClient struct {
@@ -25,17 +28,31 @@ func NewTClient(addr string, db *model.RdbUtils) *TClient {
 
 	c.Online()
 
-	return &TClient{
+	tc := &TClient{
 		client: c,
 		db:     db,
 	}
+
+	//注册处理函数
+	tc.client.RegMessageHandler(tc.HandleMessage)
+
+	return tc
 }
 
 func (tc *TClient) HandleMessage(msg *zero.Message) {
 	rm := new(proto.RoomMessage)
 	if msg.GetCMD() == int32(proto.StartRoomMessage) || msg.GetCMD() == int32(proto.StopRoomMessage) {
-		json.Unmarshal(msg.GetData(),rm)
-		exec.Command("python",fmt.Sprintf("d:\room.py -c %s -r %d",rm.Command,rm.Rid))
+		json.Unmarshal(msg.GetData(), rm)
+
+		log.Printf("%s room %d\n", rm.Command, rm.Rid)
+		
+		//更新设备状态为占用状态
+		tc.db.DeviceUpdate("", proto.DeviceInfo{
+			Using:        util.NewBool(true),
+			UsingBeganAt: time.Now(),
+		})
+
+		exec.Command("python", fmt.Sprintf("c:\room.py -c %s -r %d", rm.Command, rm.Rid))
 	}
 }
 
