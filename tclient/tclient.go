@@ -51,8 +51,16 @@ func (tc *TClient) HandleMessage(msg *zero.Message) {
 			Using:        util.NewBool(true),
 			UsingBeganAt: time.Now(),
 		})
-
-		exec.Command("python", fmt.Sprintf("c:\room.py -c %s -r %d", rm.Command, rm.Rid))
+		args := make([]string,5)
+		args[0] = "c:\\room.py"
+		args[1] = "-c"
+		args[2] = fmt.Sprintf("%s",rm.Command)
+		args[3] = "-r"
+		args[4] = fmt.Sprintf("%d",rm.Rid)
+		c := exec.Command("python",args...)
+		if err := c.Run();err != nil {
+			fmt.Println("Error: ",err)
+		}
 	}
 }
 
